@@ -4,9 +4,6 @@ const attendanceModel = require("../model/attendance")
 
 const app = express();
 
-// Connect to the MongoDB instance
-mongoose.connect('mongodb://localhost/attendance', { useNewUrlParser: true });
-
 // Define routes
 const attendance = async (req, res) => {
     try {
@@ -33,44 +30,27 @@ const getAttendance = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
-app.put('/attendance/:id', (req, res) => {
-    // Update the specified attendance record
-    Attendance.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, attendance) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).json(attendance);
-        }
-    });
-});
 
 const updateAttendance = async (req, res) => {
     // Update the specified attendance record
-   try {
-    const employeeId = req.params.id;
-    const data = req.body
-    const updateAttendance = await attendanceModel.findByIdAndUpdate({ _id: employeeId }, { ...data }, { new: true })
-    return res.status(200).send({status:true,message:"Attendance updated successfully",data:updateAttendance})
-   } catch (error) {
-    return res.status(500).send({status:false,message:error.message})
-   }
+    try {
+        const employeeId = req.params.id;
+        const data = req.body
+        const updateAttendance = await attendanceModel.findByIdAndUpdate({ _id: employeeId }, { ...data }, { new: true })
+        return res.status(200).send({ status: true, message: "Attendance updated successfully", data: updateAttendance })
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
 }
 
-app.delete('/attendance/:id', (req, res) => {
-    // Delete the specified attendance record
-    Attendance.findByIdAndRemove(req.params.id, (err) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).send('Attendance record deleted');
-        }
-    });
-});
+const deleteAttendance = async (req, res) => {
+    try {
+        const employeeId = req.params.id
+        const deleteEmployee = await attendanceModel.findByIdAndDelete({ _id: employeeId })
+        return res.status(200).send({ status: true, message: "Attendance deleted successfully" })
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 
-// Start the server
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
-});
-
-
-module.exports = { attendance, getAttendance }
+module.exports = { attendance, getAttendance, updateAttendance, deleteAttendance }
